@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IngredientSearch</title>
+
+    <!-- Load the markup for the Interactive UI bar -->
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css'%}">
+
+    <style>
+      body,html{
+       margin:0;
+       width:100%;
+      }
+
+      input[type="recipe"]::placeholder {
+        text-align: center;
+        margin-top: 100px;
+      }
+
+      /* Button configurations */
+      button {
+        background-color: lightgray;
+        color: black;
+        height: 30px;
+        width: 60px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        justify-content: center;
+        /* align-items: center; */
+        /* display: flex; */
+        text-align: center;
+        /* margin: auto;
+        position: absolute; */
+      }
+      /* .margin-auto {
+        margin: 0 auto;
+      } */
+      .flex-parent {
+        display: flex;
+      }
+
+      .jc-center {
+         justify-content: center;
+      }
+
+      /* Change the colors for actions on the Search button */
+      button:hover {
+        opacity: 0.8;
+      }
+    
+      button:active {
+        opacity: 0.5;
+      }
+      .input {
+        text-align: center;
+        justify-content: center;
+      }
+    
+      /* Format different components of the webpage */
+      .title {
+        text-align: center;
+      }
+
+
+      h1 {
+          color: #26fd53;
+      }
+ 
+      h2,h3 {
+          font-family: Impact;
+      }
+
+      h4 {
+        color: rgb(114, 202, 219);
+        font-size: medium;
+        margin-left: 50px;
+        margin-right: 50px;
+
+      }
+      h5 {
+        color: rgb(114, 202, 219);
+        font-size: 13px;
+        max-width: 630px;
+        min-width: 400px;
+        margin: auto;
+      }
+ 
+      body {
+          text-align: left;
+          margin-left: 10px;
+          background: #222327;
+      }
+
+      label {
+        font-size: 15px;
+        font-weight: 700;
+        color: #26fd53;
+      }
+
+      #output {
+        text-align: center;
+      }
+
+      label {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Search by ingredients</h1>
+    <h4 class="title">Looking for a new Recipe? Enter any ingredient or upload a picture to find numerous recipes!</h4>
+    <!-- Create the Interactive UI bar -->
+    <div class="navigation">
+      <ul>
+        <li class="list active" id="text">
+          <a href="#">
+            <span class="icon">
+              <ion-icon name="text-outline"></ion-icon>
+            </span>
+            <span class="text">Text</span>
+          </a>
+        </li>
+        <li class="list" id="image">
+          <a href="#">
+            <span class="icon">
+              <ion-icon name="images-outline"></ion-icon>
+            </span>
+            <span class="text">Image</span>
+          </a>
+        </li>
+        <div class="indicator"></div>
+      </ul>
+    </div>
+
+    <!--  Script to enable-disable visibility of text/image search methods based on Interactive UI Bar status -->
+    <script> 
+    const list = document.querySelectorAll('.list');
+      const listText = document.querySelectorAll('#text');
+      const listImage = document.querySelectorAll('#image');
+      function activeLink() {
+        list.forEach((item) =>
+        item.classList.remove('active'));
+        this.classList.add('active');
+      }
+      function ShowText() {
+          var t = document.getElementById('searchText');
+          var i = document.getElementById('searchImage');
+          t.style.display = 'block';
+          i.style.display = 'none';
+      }
+      function ShowImage() {
+          var t = document.getElementById('searchText');
+          var i = document.getElementById('searchImage');
+          t.style.display = 'none';
+          i.style.display = 'block';
+      }
+      list.forEach((item) =>
+      {
+        item.addEventListener('click', activeLink);
+      });
+      listText.forEach((item) =>
+      {
+        item.addEventListener('click', ShowText);
+      });
+      listImage.forEach((item) =>
+      {
+        item.addEventListener('click', ShowImage);
+      });
+    </script>
+    <!-- Icons used in the Interactive UI bar -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <br /><br />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Seacrh by text box -->
+    <div id="searchText" style="display:block">
+      <input id="search" value="{{keys}}"><button onclick="getRecipeByIngredients_Many(document.getElementById('search').value)">Search</button>
+    </div>
+    <br /><br />
+    
+    <!-- Search by image box -->
+    <div id="searchImage" style="display:none">
+      <!-- <label> Choose the File to upload: </label>
+      <input type="file" id="myFile" /> -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+         {{ form.as_p }}
+        <button type="submit">Search by photo</button>
+      </form>
+    </div>
+    <body onload="getRecipeByIngredients_Many('{{keys}}')"></body>
+    <div id="output"></div>
+    
+    
+
+    
+    <script>
+      // Add the external link button that link to detailed recipe
+      function addSelectButton(id){
+        return new Promise(function (resolve, reject) {
+          $.ajax({
+            url:"https://api.spoonacular.com/recipes/"+id+"/information?apiKey=ENTERSPOONACULARKEY",
+            success: function(res) {
+              document.getElementById("output").innerHTML += "<button onclick=window.location.href='" + res.sourceUrl + "';>Select</button>"
+              resolve();
+            }
+          })
+        });
+      }
+
+      // Add the overview summary of each recipe
+      function addSummary(id){
+        return new Promise(function (resolve, reject) {
+          $.ajax({
+            url: "https://api.spoonacular.com/recipes/"+id+"/summary?apiKey=ENTERSPOONACULARKEY",
+            success: function(res) {
+              document.getElementById("output").innerHTML +=  "<br><h5>"+res.summary+"</h5><br>"
+              resolve();
+            }
+          })
+        });
+      }
+
+      // Function that control arrangement of the contents on the page (handle asynchronousity nature of JavaScript)
+      async function populateImageandLink (res) {
+          document.getElementById("output").innerHTML=""
+          for (var i = 0; i < res.length; i++) {
+              document.getElementById("output").innerHTML+="<br><h1>"+res[i].title+"</h1><br><img src='"+res[i].image+"'width='400'>" 
+              await addSelectButton(res[i].id)
+              await addSummary(res[i].id)
+          }
+      }
+      
+      // Get many recipes from a call to Spoonacular API
+      function getRecipeByIngredients_Many(q){
+        $.ajax({
+          url:"https://api.spoonacular.com/recipes/findByIngredients?apiKey=ENTERSPOONACULARKEY&ingredients="+q,
+          success: function(res){
+            populateImageandLink(res)
+          }
+        })
+      }
+    
+      // Get one recipe from a call to Spoonacular API
+      function getRecipeByIngredients_One(q){
+        $.ajax({
+          url:"https://api.spoonacular.com/recipes/findByIngredients?apiKey=ENTERSPOONACULARKEY&ingredients="+q+"&number=1",
+          success: function(res){
+            populateImageandLink(res)
+          }
+        })
+      }
+    
+      // Get five recipes from a call to Spoonacular API
+      function getRecipeByIngredients_Five(q){
+        $.ajax({
+          url:"https://api.spoonacular.com/recipes/findByIngredients?apiKey=ENTERSPOONACULARKEY&ingredients="+q+"&number=5",
+          success: function(res){
+            populateImageandLink(res)
+            // appendData(res)
+          }
+        })
+      }
+    
+    //   function appendData(res) {
+    //     for (var i = 0; i < res.length; i++) {
+    //       document.getElementById("output").innerHTML="<h1>"+res[i].title+"</h1><br><img src='"+res[i].image+"'width='400'/><br>"
+    //     }
+    //   }
+
+    //   function getFullRecipeDetails(id){
+    //     $.ajax({
+    //       url:"https://api.spoonacular.com/recipes/"+id+"/information?apiKey=ENTERSPOONACULARKEY",
+    //       success: function(res){
+    //         document.getElementById("sourceLink").innerHTML=res.sourceUrl
+    //         document.getElementById("sourceLink").href=res.sourceUrl
+    //       }
+    //     })
+    //   }
+    </script>
+  </body>
+</html>
