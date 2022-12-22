@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/Users/xianruizhong/Downloads/course-project-group-36-feature-google-api/spoonacular_and_cloud')
+sys.path.append('../course-project-group-36-feature-google-api/spoonacular_and_cloud')
 from both_api import both_api
 
 both_api = both_api()
