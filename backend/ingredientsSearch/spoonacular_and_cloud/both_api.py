@@ -2,8 +2,8 @@
 import sys
   
 
-sys.path.append('../course-project-group-36-feature-google-api/spoonacular_api')
-sys.path.append('../course-project-group-36-feature-google-api/Google_Cloud_Vision_API')
+sys.path.append('../Cooking-Recipe-Web-Application-feature-google-api/spoonacular_api')
+sys.path.append('../Cooking-Recipe-Web-Application-feature-google-api/Google_Cloud_Vision_API')
 
 
 from google_cloud_vision_api_class import google_cloud_vision_api
