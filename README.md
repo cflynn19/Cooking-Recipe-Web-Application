@@ -100,8 +100,8 @@ This function makes a request to get top 1 recipes found with the given ingredie
 5. Run `pip install Django`
 6. Run `pip install spoonacular`
 7. Run `pip install google-cloud-vision`
-8. Run `git clone https://github.com/CS222-UIUC/course-project-group-36.git`
-9. Run `cd course-project-group-36/backend`
+8. Run `git clone https://github.com/CS222-UIUC/Cooking-Recipe-Web-Application.git`
+9. Run `cd Cooking-Recipe-Web-Application/backend`
 10. Run `python manage.py runserver`
 11. Open up a web browser, and navigate to `http://127.0.0.1:8000/ingredientsSearch/homepage`
 
